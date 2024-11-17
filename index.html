@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeAI - Your Intelligent Coding Assistant</title>
+    <style>
+        /* Keeping existing styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary: #4A90E2;
+            --secondary: #2C3E50;
+            --accent: #E74C3C;
+            --light: #ECF0F1;
+            --dark: #2C3E50;
+        }
+
+        /* Previous styles remain the same until modal... */
+         body {
+            background-color: #f5f6fa;
+        }
+
+        header {
+            background-color: white;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8rem 5% 5rem;
+            background: linear-gradient(135deg, #fff 0%, #f5f6fa 100%);
+            min-height: 100vh;
+        }
+
+        .hero-content {
+            flex: 1;
+            padding-right: 2rem;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-image img {
+            width: 550px;
+            height: 550px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, #2980b9 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+        }
+
+        .features {
+            padding: 5rem 5%;
+            background: white;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--dark);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .services {
+            padding: 5rem 5%;
+            background: #f5f6fa;
+        }
+
+        .services h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--dark);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-header button.active {
+            color: var(--dark);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal button.submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .save-password-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1002;
+        }
+
+        .typed-text {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .chat-interface {
+            display: none;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 6rem auto;
+        }
+
+        .chat-box {
+            height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            background: white;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .chat-input button {
+            padding: 0.8rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background: #e3f2fd;
+            margin-left: auto;
+        }
+
+        .ai-message {
+            background: #f5f5f5;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding-top: 6rem;
+            }
+
+            .hero-content {
+                padding-right: 0;
+                margin-bottom: 2rem;
+            }
+
+            .hero-image img {
+                width: 300px;
+                height: 300px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+        
+        /* Rest of the previous styles remain the same */
+    </style>
+</head>
+<body>
+    <!-- Previous HTML content remains the same until modal... -->
+<header>
+        <nav>
+            <div class="logo">CodeAI</div>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#features">Features</a>
+                <a href="#services">Services</a>
+            </div>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Your Intelligent Coding Assistant</h1>
+            <p>Experience the future of coding with our AI-powered development assistant. Get instant solutions, explanations, and code optimization suggestions.</p>
+            <a href="#" class="cta-button" id="getStarted">Get Started</a>
+        </div>
+        <div class="hero-image">
+            <img src="https://assets.eweek.com/uploads/2023/08/ew08292023-conversational-ai-platforms.png" alt="AI Assistant">
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <h2>Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Intelligent Code Completion</h3>
+                <p>Advanced AI-powered code suggestions that understand context and your coding style.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Real-time Error Detection</h3>
+                <p>Catch and fix errors before they become problems with our smart error detection system.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Code Optimization</h3>
+                <p>Get suggestions for improving your code's performance and readability.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <h2>Services</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <h3>Code Review</h3>
+                <p>Get comprehensive code reviews with detailed explanations and improvement suggestions.</p>
+            </div>
+            <div class="service-card">
+                <h3>Problem Solving</h3>
+                <p>Stuck on a coding problem? Get instant solutions with detailed explanations.</p>
+            </div>
+            <div class="service-card">
+                <h3>Learning Assistant</h3>
+                <p>Learn new programming concepts with interactive explanations and examples.</p>
+            </div>
+        </div>
+    </section>
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="loginTab" class="active">Login</button>
+                <button id="registerTab">Register</button>
+            </div>
+            
+            <div id="loginForm">
+                <div class="form-group">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                </div>
+                <button class="submit-btn" id="loginButton">Login</button>
+            </div>
+
+            <div id="registerForm" style="display: none;">
+                <div class="form-group">
+                    <input type="email" id="registerEmail" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerPassword" placeholder="Password" required>
+                </div>
+                <button class="submit-btn" id="registerButton">Register</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="savePasswordModal" class="save-password-modal">
+        <h3>Would you like to save your password?</h3>
+        <button id="saveYes" class="submit-btn">Yes</button>
+        <button id="saveNo" class="submit-btn">No</button>
+    </div>
+<div id="chatInterface" class="chat-interface">
+        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-input">
+            <input type="text" id="questionInput" placeholder="Ask your coding question...">
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+
+    <!-- Rest of the previous HTML content remains the same -->
+
+    <script>
+        // Store user credentials
+        let users = [];
+
+        // Get DOM elements
+        const getStartedBtn = document.getElementById('getStarted');
+        const loginModal = document.getElementById('loginModal');
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginButton = document.getElementById('loginButton');
+        const registerButton = document.getElementById('registerButton');
+        const savePasswordModal = document.getElementById('savePasswordModal');
+        const chatInterface = document.getElementById('chatInterface');
+
+        // Show login modal when Get Started is clicked
+        getStartedBtn.addEventListener('click', () => {
+            loginModal.style.display = 'flex';
+        });
+
+        // Tab switching
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+        });
+
+        registerTab.addEventListener('click', () => {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.style.display = 'block';
+            loginForm.style.display = 'none';
+        });
+
+        // Handle registration
+        registerButton.addEventListener('click', () => {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            if (email && password) {
+                users.push({ email, password });
+                savePasswordModal.style.display = 'block';
+            }
+        });
+
+        // Handle save password modal
+        document.getElementById('saveYes').addEventListener('click', () => {
+            savePasswordModal.style.display = 'none';
+            loginModal.style.display = 'none';
+            showChatInterface();
+        });
+
+        document.getElementById('saveNo').addEventListener('click', () => {
+            savePasswordModal.style.display = 'none';
+            loginModal.style.display = 'none';
+            showChatInterface();
+        });
+
+        // Handle login
+        loginButton.addEventListener('click', () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const user = users.find(u => u.email === email && u.password === password);
+            if (user) {
+                loginModal.style.display = 'none';
+                showChatInterface();
+            } else {
+                alert('Invalid credentials. Please try again.');
+            }
+        });
+
+        function showChatInterface() {
+            chatInterface.style.display = 'block';
+            chatInterface.scrollIntoView({ behavior: 'smooth' });
+            
+            // Animate hero text
+            const heroContent = document.querySelector('.hero-content');
+            const textElements = heroContent.querySelectorAll('h1, p');
+            
+            textElements.forEach((element, index) => {
+                const text = element.textContent;
+                element.textContent = '';
+                element.classList.add('typed-text');
+                
+                let charIndex = 0;
+                setTimeout(() => {
+                    element.style.opacity = 1;
+                    const typing = setInterval(() => {
+                        if (charIndex < text.length) {
+                            element.textContent += text[charIndex];
+                            charIndex++;
+                        } else {
+                            clearInterval(typing);
+                        }
+                    }, 50);
+                }, index * 1000);
+            });
+        }
+sendButton.addEventListener('click', sendQuestion);
+        questionInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendQuestion();
+            }
+        });
+
+        function sendQuestion() {
+            const question = questionInput.value.trim();
+            if (question) {
+                // Add user message
+                addMessage(question, 'user');
+
+                // Simulate AI response
+                setTimeout(() => {
+                    const response = generateAIResponse(question);
+                    addMessage(response, 'ai');
+                }, 1000);
+
+                questionInput.value = '';
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.textContent = text;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function generateAIResponse(question) {
+            // Simple response generation logic
+            const responses = {
+                'hello': 'Hi! How can I help you with your coding today?',
+                'help': 'I can help you with coding problems, explain concepts, and suggest optimizations. What would you like to know?',
+                default: "Let me help you with that. Could you provide more details about your coding question?"
+            };
+
+            // Convert question to lowercase for matching
+            const lowercaseQuestion = question.toLowerCase();
+
+            // Return matching response or default
+            for (let key in responses) {
+                if (lowercaseQuestion.includes(key)) {
+                    return responses[key];
+                }
+            }
+            return responses.default;
+        }
+
+        // Close modal when clicking outside
+        window.onclick = (event) => {
+            if (event.target === loginModal) {
+                loginModal.style.display = 'none';
+            }
+        };
+        function generateAIResponse(question) {
+            // Knowledge base for common programming questions and definitions
+            const knowledgeBase = {
+                // JavaScript
+                'javascript': 'JavaScript is a high-level, interpreted programming language that conforms to the ECMAScript specification. It enables interactive web pages and is an essential part of web applications.',
+                'var': 'var is a keyword in JavaScript used to declare variables. However, it\'s considered legacy and it\'s recommended to use let or const instead due to better scoping rules.',
+                'let': 'let is a block-scoped variable declaration in JavaScript introduced in ES6. Unlike var, it prevents variable hoisting and duplicate declarations in the same scope.',
+                'const': 'const is used to declare constants in JavaScript. Variables declared with const cannot be reassigned, although objects and arrays declared with const can still be modified.',
+                'function': 'A function in programming is a reusable block of code that performs a specific task. It can take inputs (parameters) and return outputs.',
+                
+                // Python
+                'python': 'Python is a high-level, interpreted programming language known for its simplicity and readability. It supports multiple programming paradigms including procedural, object-oriented, and functional programming.',
+                'list': 'A list in Python is a built-in data type that stores an ordered sequence of elements. Lists are mutable, can contain elements of different types, and are defined using square brackets [].',
+                'dictionary': 'A dictionary in Python is an unordered collection of key-value pairs. It\'s defined using curly braces {} and each key-value pair is separated by a comma.',
+                'tuple': 'A tuple in Python is an immutable sequence type. Unlike lists, tuples cannot be modified after creation. They are defined using parentheses ().',
+                
+                // Data Structures
+                'array': 'An array is a data structure consisting of a collection of elements, each identified by an index or key. Arrays store elements in contiguous memory locations.',
+                'linked list': 'A linked list is a linear data structure where elements are stored in nodes, and each node points to the next node in the sequence.',
+                'stack': 'A stack is a linear data structure that follows the Last In First Out (LIFO) principle. Common operations include push (add) and pop (remove).',
+                'queue': 'A queue is a linear data structure that follows the First In First Out (FIFO) principle. Common operations include enqueue (add) and dequeue (remove).',
+                
+                // Web Development
+                'html': 'HTML (HyperText Markup Language) is the standard markup language for creating web pages. It describes the structure of web pages using markup.',
+                'css': 'CSS (Cascading Style Sheets) is a style sheet language used for describing the presentation of a document written in HTML.',
+                'api': 'API (Application Programming Interface) is a set of definitions and protocols for building and integrating application software.',
+                
+                // Programming Concepts
+                'loop': 'A loop is a programming construct that repeats a block of code until a specified condition is met.',
+                'recursion': 'Recursion is a programming concept where a function calls itself to solve a problem by breaking it down into smaller subproblems.',
+                'algorithm': 'An algorithm is a step-by-step procedure or formula for solving a problem. It\'s a finite sequence of well-defined instructions.',
+                'debugging': 'Debugging is the process of finding and fixing errors (bugs) in software code.',
+                
+                // Object-Oriented Programming
+                'class': 'A class is a blueprint for creating objects in object-oriented programming. It encapsulates data and behavior that the object must have.',
+                'inheritance': 'Inheritance is a mechanism in object-oriented programming that allows a class to inherit properties and methods from another class.',
+                'polymorphism': 'Polymorphism is the ability of different classes to be treated as instances of the same class through inheritance.',
+                'encapsulation': 'Encapsulation is the bundling of data and the methods that operate on that data within a single unit or object.'
+            };
+
+            // Process the question
+            const lowercaseQuestion = question.toLowerCase();
+            
+            // Check if it's a definition request
+            for (let key in knowledgeBase) {
+                if (lowercaseQuestion.includes(`what is ${key}`) || 
+                    lowercaseQuestion.includes(`define ${key}`) ||
+                    lowercaseQuestion.includes(`explain ${key}`)) {
+                    return knowledgeBase[key];
+                }
+            }
+
+            // Handle code-related questions
+            if (lowercaseQuestion.includes('how to')) {
+                if (lowercaseQuestion.includes('javascript') || lowercaseQuestion.includes('js')) {
+                    return generateJavaScriptExample(lowercaseQuestion);
+                } else if (lowercaseQuestion.includes('python')) {
+                    return generatePythonExample(lowercaseQuestion);
+                }
+            }
+
+            // Handle general programming questions
+            if (lowercaseQuestion.includes('difference between')) {
+                return generateComparison(lowercaseQuestion);
+            }
+
+            // Default response for questions not directly in the knowledge base
+            const codingTerms = Object.keys(knowledgeBase).filter(term => lowercaseQuestion.includes(term));
+            if (codingTerms.length > 0) {
+                return knowledgeBase[codingTerms[0]];
+            }
+
+            return "I understand you're asking about coding! Could you please rephrase your question or be more specific? You can ask about definitions, concepts, or specific programming problems.";
+        }
+
+        function generateJavaScriptExample(question) {
+            if (question.includes('loop')) {
+                return `Here's how to create a loop in JavaScript:
+
+for (let i = 0; i < array.length; i++) {
+    console.log(array[i]);
+}
+
+// Or using forEach:
+array.forEach(item => console.log(item));`;
+            }
+            // Add more JavaScript examples as needed
+            return "Could you please specify what kind of JavaScript example you're looking for?";
+        }
+
+        function generatePythonExample(question) {
+            if (question.includes('loop')) {
+                return `Here's how to create a loop in Python:
+
+# For loop
+for item in list:
+    print(item)
+
+# While loop
+while condition:
+    print("Loop running")`;
+            }
+            // Add more Python examples as needed
+            return "Could you please specify what kind of Python example you're looking for?";
+        }
+
+        function generateComparison(question) {
+            if (question.includes('python') && question.includes('javascript')) {
+                return `Key differences between Python and JavaScript:
+1. Python is mainly used for backend and general programming
+2. JavaScript is primarily for web development
+3. Python uses indentation for blocks, JavaScript uses curly braces
+4. Python is strongly typed, JavaScript is loosely typed`;
+            }
+            // Add more comparisons as needed
+            return "Could you please specify which technologies or concepts you'd like to compare?";
+        }
+        // Previous chat functionality remains the same...
+    </script>
+</body>
+</html>
